@@ -43,9 +43,12 @@ function main() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     for (let i = 0; i < alphabet.length; i++) {
-        ctx.drawImage(letter[alphabet[i].word], alphabet[i].x, 315);
+        ctx.drawImage(letter[alphabet[i].word], alphabet[i].x, 270);
 
         alphabet[i].x += alphabet[i].dx;
+        if (alphabet[i].x > canvas.width) {
+            alphabet.shift();
+        }
     };
 
 
