@@ -5,42 +5,48 @@ let ctx = canvas.getContext('2d');
 
 let end = true, flashId;
 let level = 0, i = -1;
-let alphabet_list = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
+let alphabet_list = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
 
+const letter = [];
+for (let im = 0; im < 26; im++) {
+    const img = new Image();
+    img.src = './img/' + im + '_.png';
+    letter.push(img);
+}
 
 class Alphabet {
-    constructor(x, dx, word, color) {
+    constructor(x, dx, word) {
         this.x = x;
         this.dx = dx;
         this.word = word;
-        this.color = color;
-    }
-}
+    };
+};
 let alphabet = [];
 
 function alphabetAdd() {
-    let a_x = 20;
-    let a_dx = 20;
-    let a_word = alphabet_list[Math.floor(Math.random() * 26)];
-    let a_color = 'hsl(' + Math.random() * 360 + ',100%,50%)';
+    let a_x = 0;
+    let a_dx = 1;
+    let a_word = Math.floor(Math.random() * 26);
 
-    let a = new Alphabet(a_x, a_dx, a_word, a_color);
+    let a = new Alphabet(a_x, a_dx, a_word);
     alphabet.push(a);
-}
+};
 
 
 
 //~~~~~~~~~~~~MAIN LOOP~~~~~~~~~~~~~
+let test_x = 0;
 
 function main() {
     let id;
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    ctx.fillStyle = '#fff';
-    ctx.fillRect(alphabet[i].x + 22.5, 317, 3, 3);
-    style_settings(alphabet[i].color, null, 'bold 70px monospace');
-    ctx.fillText(alphabet[i].word, alphabet[i].x, 315);
+    for (let i = 0; i < alphabet.length; i++) {
+        ctx.drawImage(letter[alphabet[i].word], alphabet[i].x, 315);
+
+        alphabet[i].x += alphabet[i].dx;
+    };
 
 
     style_settings('#fff', null, 'bold 45px sans-serif');
@@ -53,8 +59,8 @@ function main() {
         start();
     } else {
         id = window.requestAnimationFrame(main);
-    }
-}
+    };
+};
 
 
 
@@ -68,17 +74,17 @@ function keyDownHandler(e) {
         clearInterval(flashId);
         flashId = null;
 
-        i++;
-        alphabetAdd();
-
         main();
-    }
+    };
 
     if (e.keyCode == 27 && end == false) {
         end = true;
-    }
+    };
 
-}
+    if (e.keyCode == 13 && end == false) {
+        alphabetAdd();
+    };
+};
 
 
 start();
@@ -96,7 +102,7 @@ function start() {
     ctx.fillText('© chikuwa_ah', 860, 615);
 
     flashId = setInterval(flashText, 800);
-}
+};
 
 let flash = 0;
 function flashText() {
@@ -116,11 +122,11 @@ function flashText() {
         ctx.fillText(startText, (canvas.width - textWidth) / 2, 400);
         flash = 0;
 
-    }
-}
+    };
+};
 
 function style_settings(fillStyle, strokeStyle, font) {
     ctx.fillStyle = fillStyle;
     ctx.strokeStyle = strokeStyle;
     ctx.font = font;
-}
+};
