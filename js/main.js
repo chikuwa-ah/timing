@@ -4,7 +4,7 @@ let canvas = document.getElementById('canvas');
 let ctx = canvas.getContext('2d');
 
 let end = true, flashId;
-let level, score, point, times, great, miss, display_time, speed;
+let level, score, point, point_display, times, great, miss, display_time, speed, alphabet_display, alphabet_time;
 
 const letter = [];
 for (let im = 0; im < 26; im++) {
@@ -35,6 +35,7 @@ function alphabetAdd() {
 
 //~~~~~~~~~~~~MAIN LOOP~~~~~~~~~~~~~
 let test_x = 0;
+let level_up;
 
 function main() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -48,11 +49,46 @@ function main() {
             alphabet[i].x += alphabet[i].dx;
         };
         if (alphabet[0].x > canvas.width) {
+            display_time = 30;
+            great = 'MISS';
+            miss--;
             alphabet.shift();
         };
     };
 
+
+    alphabet_display--;
+    if (alphabet_display <= 0) {
+        alphabet_display = alphabet_time;
+        alphabetAdd();
+    }
+
+
+
+
+    if (point >= 800) {
+        level++;
+        point = 0;
+        level_up = 1000;
+        alphabet_display = 0;
+        alphabet = [];
+        if (level % 2 == 0) {
+            speed++;
+            alphabet_time -= 70;
+            if (alphabet_time < 70) {
+                alphabet_time = 70;
+            }
+        } else if (level % 2 == 1) {
+            times++;
+        }
+    }
+
+
+
+
+
     style_settings('#fff', '#fff', 'bold 20px sans-serif');
+
     if (display_time > 0) {
         display_time--;
         let textWidth = ctx.measureText(great).width;
@@ -61,8 +97,18 @@ function main() {
         great = '';
     }
 
+    if (point > point_display) {
+        point_display += 10;
+    } else {
+        point_display = point;
+    }
+    ctx.fillRect(100, 90, point_display, 10);
 
     ctx.font = 'bold 45px sans-serif';
+    if (level_up > -300) {
+        ctx.fillText('LEVEL UP!', level_up, 320);
+        level_up -= 10;
+    }
     ctx.fillText('SCORE：' + score, 50, canvas.height - 25);
     let lv_text = 'Lv.' + level;
     let textWidth = ctx.measureText(lv_text).width;
@@ -87,29 +133,32 @@ function main() {
 function judge(a) {
 
     display_time = 30;
+    let score_add = 0;
 
     if (a == alphabet[0].word) {
 
         if (alphabet[0].x >= 735 && alphabet[0].x <= 825) {
 
             great = 'GREAT!  ×1.0';
-            score += level * 40;
+            score_add = level * 40;
 
             if (alphabet[0].x >= 765 && alphabet[0].x <= 795) {
 
                 great = 'PERFECT!!  ×1.2';
-                score += level * 40 * 1.2;
+                score_add = level * 40 * 1.2;
             }
 
+            point += 800 / times
         } else {
-            great = 'MISS';
+            great = 'TIMING MISS';
             miss--;
         }
     } else {
-        great = 'MISS';
+        great = 'TYPE MISS';
         miss--;
     }
 
+    score += score_add;
     alphabet.shift();
 }
 
@@ -153,7 +202,7 @@ start();
 function start() {
     //initialize
     alphabet = [];
-    score = 0, level = 1, point = 0, times = 2, miss = 3, display_time = 0, speed = 2;
+    score = 0, level = 1, point = 0, point_display = 0, times = 2, miss = 3, display_time = 0, speed = 2, alphabet_display = 0, alphabet_time = 300;
 
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -196,7 +245,3 @@ function style_settings(fillStyle, strokeStyle, font) {
     ctx.strokeStyle = strokeStyle;
     ctx.font = font;
 };
-
-
-
-let opop = setInterval(alphabetAdd, 2000);
