@@ -4,7 +4,7 @@ let canvas = document.getElementById('canvas');
 let ctx = canvas.getContext('2d');
 
 let end = true, flashId;
-let level, score, point, times, great, miss, display_time;
+let level, score, point, times, great, miss, display_time, speed;
 
 const letter = [];
 for (let im = 0; im < 26; im++) {
@@ -23,8 +23,8 @@ class Alphabet {
 let alphabet = [];
 
 function alphabetAdd() {
-    let a_x = 0;
-    let a_dx = 5;
+    let a_x = -90;
+    let a_dx = speed;
     let a_word = Math.floor(Math.random() * 26);
 
     let a = new Alphabet(a_x, a_dx, a_word);
@@ -57,15 +57,18 @@ function main() {
         display_time--;
         let textWidth = ctx.measureText(great).width;
         ctx.fillText(great, (425 - textWidth) / 2 + 600, 400);
+    } else {
+        great = '';
     }
 
-    console.log('main');
 
     ctx.font = 'bold 45px sans-serif';
     ctx.fillText('SCORE：' + score, 50, canvas.height - 25);
-    ctx.fillText('Lv.' + level, 530, 70);
-    ctx.strokeRect(700, 30, 250, 45);
-    ctx.fillStyle = '#55f';
+    let lv_text = 'Lv.' + level;
+    let textWidth = ctx.measureText(lv_text).width;
+    ctx.fillText(lv_text, (canvas.width - textWidth) / 2, 70);
+    ctx.strokeRect(100, 90, 800, 10);
+    ctx.fillStyle = '#5ff';
     ctx.fillRect(770, 350, 30, 5);
     ctx.fillRect(830, 350, 30, 5);
     ctx.fillStyle = '#f55';
@@ -83,24 +86,31 @@ function main() {
 
 function judge(a) {
 
+    display_time = 30;
+
     if (a == alphabet[0].word) {
 
-        display_time = 20;
-        if (alphabet[0].x >= 770 && alphabet[0].x <= 860) {
+        if (alphabet[0].x >= 735 && alphabet[0].x <= 825) {
 
-            great = 'GREAT!  ×1.2';
+            great = 'GREAT!  ×1.0';
+            score += level * 40;
 
-            if (alphabet[0].x >= 800 && alphabet[0].x <= 830) {
+            if (alphabet[0].x >= 765 && alphabet[0].x <= 795) {
 
-                great = 'PERFECT!!  ×1.5';
+                great = 'PERFECT!!  ×1.2';
+                score += level * 40 * 1.2;
             }
 
         } else {
-            great = 'NICE ×1.0';
+            great = 'MISS';
+            miss--;
         }
     } else {
+        great = 'MISS';
         miss--;
     }
+
+    alphabet.shift();
 }
 
 
@@ -143,7 +153,7 @@ start();
 function start() {
     //initialize
     alphabet = [];
-    score = 0, level = 0, point = 0, times = 2, miss = 3, display_time = 0;
+    score = 0, level = 1, point = 0, times = 2, miss = 3, display_time = 0, speed = 2;
 
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -186,3 +196,7 @@ function style_settings(fillStyle, strokeStyle, font) {
     ctx.strokeStyle = strokeStyle;
     ctx.font = font;
 };
+
+
+
+let opop = setInterval(alphabetAdd, 2000);
