@@ -4,7 +4,7 @@ let canvas = document.getElementById('canvas');
 let ctx = canvas.getContext('2d');
 
 let end = true, flashId;
-let level, score, point, point_display, times, great, miss, display_time, speed, alphabet_display, alphabet_time;
+let level, score, point, point_display, times, great, miss, display_time, speed, alphabet_display, alphabet_time, alphabet_time_remove, error_back, high_score = 0;
 
 const letter = [];
 for (let im = 0; im < 26; im++) {
@@ -39,6 +39,11 @@ let level_up;
 
 function main() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if (error_back > 0) {
+        error_back--;
+        ctx.fillStyle = '#d22';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
 
 
 
@@ -72,11 +77,15 @@ function main() {
         level_up = 1000;
         alphabet_display = 0;
         alphabet = [];
+        alphabet_time -= alphabet_time_remove;
+        alphabet_time_remove *= 0.7;
+        if (alphabet_time < 30) {
+            alphabet_time = 30;
+        }
         if (level % 2 == 0) {
             speed++;
-            alphabet_time -= 70;
-            if (alphabet_time < 70) {
-                alphabet_time = 70;
+            if (speed > 16) {
+                speed = 16;
             }
         } else if (level % 2 == 1) {
             times++;
@@ -106,10 +115,11 @@ function main() {
 
     ctx.font = 'bold 45px sans-serif';
     if (level_up > -300) {
-        ctx.fillText('LEVEL UP!', level_up, 320);
-        level_up -= 10;
+        ctx.fillText('LEVEL UP!', level_up, 260);
+        level_up -= 20;
     }
     ctx.fillText('SCORE：' + score, 50, canvas.height - 25);
+    ctx.fillText('MISS：' + miss + '/3', 700, canvas.height - 25);
     let lv_text = 'Lv.' + level;
     let textWidth = ctx.measureText(lv_text).width;
     ctx.fillText(lv_text, (canvas.width - textWidth) / 2, 70);
@@ -121,6 +131,7 @@ function main() {
     ctx.fillRect(800, 350, 30, 5);
 
 
+
     let id;
     if (end) {
         window.cancelAnimationFrame(id);
@@ -128,11 +139,50 @@ function main() {
     } else {
         id = window.requestAnimationFrame(main);
     };
+
+    if (miss == 3) {
+        window.cancelAnimationFrame(id);
+        style_settings('#fff', null, 'bold 80px sans-serif');
+        let over_text = 'GAME OVER';
+        textWidth = ctx.measureText(over_text).width;
+        ctx.fillText(over_text, (canvas.width - textWidth) / 2, 310);
+        setTimeout(ended, 3000);
+    }
+
 };
+
+function ended() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    let text, textWidth;
+
+    if (score > high_score) {
+        high_score = score;
+        text = 'HIGH SCORE!!';
+        textWidth = ctx.measureText(text).width;
+        ctx.fillText(text, (canvas.width - textWidth) / 2, 170);
+    } else {
+        text = 'GAME END';
+        textWidth = ctx.measureText(text).width;
+        ctx.fillText(text, (canvas.width - textWidth) / 2, 170);
+    }
+
+    ctx.font = 'bold 40px sans-serif';
+    text = 'Lv.' + level;
+    textWidth = ctx.measureText(text).width;
+    ctx.fillText(text, (canvas.width - textWidth) / 2, 300);
+    text = 'SCORE：' + score;
+    textWidth = ctx.measureText(text).width;
+    ctx.fillText(text, (canvas.width - textWidth) / 2, 360);
+    ctx.font = 'bold 35px sans-serif';
+    text = 'PRESS ESCAPE TO TITLE';
+    textWidth = ctx.measureText(text).width;
+    ctx.fillText(text, (canvas.width - textWidth) / 2, 490);
+
+}
 
 function judge(a) {
 
-    display_time = 30;
+    display_time = 40;
     let score_add = 0;
 
     if (a == alphabet[0].word) {
@@ -151,11 +201,13 @@ function judge(a) {
             point += 800 / times
         } else {
             great = 'TIMING MISS';
-            miss--;
+            miss++;
+            error_back = 15;
         }
     } else {
         great = 'TYPE MISS';
-        miss--;
+        miss++;
+        error_back = 15;
     }
 
     score += score_add;
@@ -179,6 +231,7 @@ function keyDownHandler(e) {
 
     if (e.keyCode == 27 && end == false) {
         end = true;
+        start();
     };
 
     if (e.keyCode == 13 && end == false) {
@@ -196,13 +249,15 @@ function keyDownHandler(e) {
 
 
 
+let press_y;
 
 start();
+
 
 function start() {
     //initialize
     alphabet = [];
-    score = 0, level = 1, point = 0, point_display = 0, times = 2, miss = 3, display_time = 0, speed = 2, alphabet_display = 0, alphabet_time = 300;
+    score = 0, level = 1, point = 0, point_display = 0, times = 2, miss = 0, display_time = 0, speed = 2, alphabet_display = 0, alphabet_time = 300, alphabet_time_remove = 80, error_back = 0;
 
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -215,7 +270,9 @@ function start() {
     style_settings('#fff', null, 'bold 15px sans-serif');
     ctx.fillText('PRESS ESCAPE KEY TO BACK TO TITLE', 20, 615);
     ctx.fillText('© chikuwa_ah', 860, 615);
+    ctx.fillText('HIGH SCORE：' + high_score, 20, 30);
 
+    press_y = 400;
     flashId = setInterval(flashText, 800);
 };
 
@@ -229,12 +286,12 @@ function flashText() {
 
     if (flash == 0) {
         ctx.fillStyle = '#fff';
-        ctx.fillText(startText, (canvas.width - textWidth) / 2, 400);
+        ctx.fillText(startText, (canvas.width - textWidth) / 2, press_y);
         flash = 1;
 
     } else if (flash == 1) {
         ctx.fillStyle = '#ccc';
-        ctx.fillText(startText, (canvas.width - textWidth) / 2, 400);
+        ctx.fillText(startText, (canvas.width - textWidth) / 2, press_y);
         flash = 0;
 
     };
