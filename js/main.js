@@ -23,7 +23,7 @@ class Alphabet {
 let alphabet = [];
 
 function alphabetAdd() {
-    let a_x = -90;
+    let a_x = -70;
     let a_dx = speed;
     let a_word = Math.floor(Math.random() * 26);
 
@@ -34,6 +34,9 @@ function alphabetAdd() {
 
 
 //~~~~~~~~~~~~MAIN LOOP~~~~~~~~~~~~~
+
+
+
 let test_x = 0;
 let level_up;
 
@@ -56,7 +59,8 @@ function main() {
         if (alphabet[0].x > canvas.width) {
             display_time = 30;
             great = 'MISS';
-            miss--;
+            miss++;
+            error_back = 15;
             alphabet.shift();
         };
     };
@@ -84,8 +88,8 @@ function main() {
         }
         if (level % 2 == 0) {
             speed++;
-            if (speed > 16) {
-                speed = 16;
+            if (speed > 20) {
+                speed = 20;
             }
         } else if (level % 2 == 1) {
             times++;
@@ -119,7 +123,7 @@ function main() {
         level_up -= 20;
     }
     ctx.fillText('SCORE：' + score, 50, canvas.height - 25);
-    ctx.fillText('MISS：' + miss + '/3', 700, canvas.height - 25);
+    ctx.fillText('MISS：' + miss + '/5', 700, canvas.height - 25);
     let lv_text = 'Lv.' + level;
     let textWidth = ctx.measureText(lv_text).width;
     ctx.fillText(lv_text, (canvas.width - textWidth) / 2, 70);
@@ -140,7 +144,7 @@ function main() {
         id = window.requestAnimationFrame(main);
     };
 
-    if (miss == 3) {
+    if (miss >= 5) {
         window.cancelAnimationFrame(id);
         style_settings('#fff', null, 'bold 80px sans-serif');
         let over_text = 'GAME OVER';
@@ -148,7 +152,6 @@ function main() {
         ctx.fillText(over_text, (canvas.width - textWidth) / 2, 310);
         setTimeout(ended, 3000);
     }
-
 };
 
 function ended() {
@@ -170,11 +173,13 @@ function ended() {
     text = 'Lv.' + level;
     textWidth = ctx.measureText(text).width;
     ctx.fillText(text, (canvas.width - textWidth) / 2, 300);
+
     text = 'SCORE：' + score;
     textWidth = ctx.measureText(text).width;
     ctx.fillText(text, (canvas.width - textWidth) / 2, 360);
+
     ctx.font = 'bold 35px sans-serif';
-    text = 'PRESS ESCAPE TO TITLE';
+    text = 'PRESS ESC TO TITLE';
     textWidth = ctx.measureText(text).width;
     ctx.fillText(text, (canvas.width - textWidth) / 2, 490);
 
@@ -194,8 +199,8 @@ function judge(a) {
 
             if (alphabet[0].x >= 765 && alphabet[0].x <= 795) {
 
-                great = 'PERFECT!!  ×1.2';
-                score_add = level * 40 * 1.2;
+                great = 'PERFECT!!  ×1.5';
+                score_add = level * 40 * 1.5;
             }
 
             point += 800 / times
@@ -209,9 +214,17 @@ function judge(a) {
         miss++;
         error_back = 15;
     }
-
     score += score_add;
     alphabet.shift();
+
+    if (error_back == 15 && alphabet.length == 0) {
+        alphabet_display = alphabet_time;
+        alphabetAdd();
+    }
+
+    if (miss > 5) {
+        miss = 5;
+    }
 }
 
 
@@ -267,10 +280,11 @@ function start() {
     let textWidth = ctx.measureText(startText).width;
     ctx.fillText(startText, (canvas.width - textWidth) / 2, 300);
 
-    style_settings('#fff', null, 'bold 15px sans-serif');
+    ctx.font = 'bold 15px sans-serif';
     ctx.fillText('PRESS ESCAPE KEY TO BACK TO TITLE', 20, 615);
     ctx.fillText('© chikuwa_ah', 860, 615);
-    ctx.fillText('HIGH SCORE：' + high_score, 20, 30);
+    ctx.font = 'bold 25px sans-serif';
+    ctx.fillText('HIGH SCORE：' + high_score, 30, 50);
 
     press_y = 400;
     flashId = setInterval(flashText, 800);
