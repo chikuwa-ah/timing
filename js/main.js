@@ -195,12 +195,12 @@ function judge(a) {
         if (alphabet[0].x >= 735 && alphabet[0].x <= 825) {
 
             great = 'GREAT!  ×1.0';
-            score_add = level * 40;
+            score_add = level * 41;
 
             if (alphabet[0].x >= 765 && alphabet[0].x <= 795) {
 
                 great = 'PERFECT!!  ×1.5';
-                score_add = level * 40 * 1.5;
+                score_add = level * 41 * 1.5;
             }
 
             point += 800 / times
@@ -214,7 +214,7 @@ function judge(a) {
         miss++;
         error_back = 15;
     }
-    score += score_add;
+    score += Math.floor(score_add);
     alphabet.shift();
 
     if (error_back == 15 && alphabet.length == 0) {
