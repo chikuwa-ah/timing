@@ -281,7 +281,7 @@ function start() {
     ctx.fillText(startText, (canvas.width - textWidth) / 2, 300);
 
     ctx.font = 'bold 15px sans-serif';
-    ctx.fillText('PRESS ESCAPE KEY TO BACK TO TITLE', 20, 615);
+    ctx.fillText('PRESS ESC KEY TO BACK TO TITLE', 20, 615);
     ctx.fillText('© chikuwa_ah', 860, 615);
     ctx.font = 'bold 25px sans-serif';
     ctx.fillText('HIGH SCORE：' + high_score, 30, 50);
