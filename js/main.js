@@ -4,7 +4,7 @@ let canvas = document.getElementById('canvas');
 let ctx = canvas.getContext('2d');
 
 let end = true, flashId;
-let level, score, point, point_display, times, great, miss, display_time, speed, alphabet_display, alphabet_time, alphabet_time_remove, error_back, high_score = 0;
+let level, score, point, point_display, times, great, miss, display_time, speed, alphabet_display, alphabet_time, alphabet_time_remove, error_back, high_score = 0, speed_add;
 
 const letter = [];
 for (let im = 0; im < 26; im++) {
@@ -87,7 +87,7 @@ function main() {
             alphabet_time = 30;
         }
         if (level % 2 == 0) {
-            speed++;
+            speed += speed_add;
             if (speed > 20) {
                 speed = 20;
             }
@@ -179,7 +179,7 @@ function ended() {
     ctx.fillText(text, (canvas.width - textWidth) / 2, 360);
 
     ctx.font = 'bold 35px sans-serif';
-    text = 'PRESS ESC TO TITLE';
+    text = 'PRESS ENTER TO TITLE';
     textWidth = ctx.measureText(text).width;
     ctx.fillText(text, (canvas.width - textWidth) / 2, 490);
 
@@ -229,7 +229,7 @@ function judge(a) {
 
 
 
-
+let mode_set = 0;
 document.addEventListener('keydown', keyDownHandler, false);
 
 function keyDownHandler(e) {
@@ -238,18 +238,34 @@ function keyDownHandler(e) {
 
         clearInterval(flashId);
         flashId = null;
+        flash = 0;
+
+        if (mode_set == 1) {
+            times = 3, speed = 3, speed_add = 1.5, alphabet_time = 220, alphabet_time_remove = 70;
+        } else if (mode_set == 2) {
+            times = 3, speed = 4, speed_add = 2, alphabet_time = 160, alphabet_time_remove = 60;
+        }
 
         main();
     };
 
     if (e.keyCode == 27 && end == false) {
         end = true;
-        start();
     };
 
     if (e.keyCode == 13 && end == false) {
-        alphabetAdd();
+        end = true;
+        start();
     };
+
+    if (e.keyCode == 37 && end == true && mode_set > 0) {
+        mode_set--;
+        mode();
+    }
+    if (e.keyCode == 39 && end == true && mode_set < 2) {
+        mode_set++;
+        mode();
+    }
 
 
     if (e.keyCode >= 65 && e.keyCode <= 90 && end == false) {
@@ -262,7 +278,6 @@ function keyDownHandler(e) {
 
 
 
-let press_y;
 
 start();
 
@@ -270,7 +285,7 @@ start();
 function start() {
     //initialize
     alphabet = [];
-    score = 0, level = 1, point = 0, point_display = 0, times = 2, miss = 0, display_time = 0, speed = 2, alphabet_display = 0, alphabet_time = 300, alphabet_time_remove = 80, error_back = 0;
+    score = 0, level = 1, point = 0, point_display = 0, times = 2, miss = 0, display_time = 0, speed = 2, speed_add = 1, alphabet_display = 0, alphabet_time = 300, alphabet_time_remove = 80, error_back = 0;
 
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -286,7 +301,7 @@ function start() {
     ctx.font = 'bold 25px sans-serif';
     ctx.fillText('HIGH SCORE：' + high_score, 30, 50);
 
-    press_y = 400;
+    mode();
     flashId = setInterval(flashText, 800);
 };
 
@@ -296,20 +311,36 @@ function flashText() {
     ctx.font = 'bold 40px sans-serif';
     let startText = 'PRESS SPACE!!';
     let textWidth = ctx.measureText(startText).width;
-    ctx.clearRect(0, 350, canvas.width, 100);
+    ctx.clearRect(0, 350, canvas.width, 50);
 
     if (flash == 0) {
         ctx.fillStyle = '#fff';
-        ctx.fillText(startText, (canvas.width - textWidth) / 2, press_y);
+        ctx.fillText(startText, (canvas.width - textWidth) / 2, 400);
         flash = 1;
 
     } else if (flash == 1) {
         ctx.fillStyle = '#ccc';
-        ctx.fillText(startText, (canvas.width - textWidth) / 2, press_y);
+        ctx.fillText(startText, (canvas.width - textWidth) / 2, 400);
         flash = 0;
 
     };
+
 };
+
+function mode() {
+    ctx.clearRect(0, 430, canvas.width, 110);
+
+    style_settings('#fff', null, 'bold 25px sans-serif');
+    let mode_type = ['EASY', 'NORMAL', 'HARD'];
+    let text = '◀︎　　　　　　　　　　▶︎';
+    let textWidth = ctx.measureText(text).width;
+    ctx.fillText(text, (canvas.width - textWidth) / 2, 530);
+
+    ctx.font = 'bold 35px sans-serif';
+    text = mode_type[mode_set];
+    textWidth = ctx.measureText(text).width;
+    ctx.fillText(text, (canvas.width - textWidth) / 2, 533);
+}
 
 function style_settings(fillStyle, strokeStyle, font) {
     ctx.fillStyle = fillStyle;
